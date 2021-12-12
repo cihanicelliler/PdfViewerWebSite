@@ -49,15 +49,18 @@
                     <a href="index.php"><i class="fa fa-home"></i> <span class="nav-label">Home Page</span></a>
                 </li>
                 <li>
-                    <a href="admindashboard.php"><i class="fa fa-table"></i> <span class="nav-label">Admin Dashboard</span></a>
+                    <a href="admindashboard.php"><i class="fa fa-table"></i> <span
+                                class="nav-label">Admin Dashboard</span></a>
                 </li>
                 <?php if (isset($_COOKIE["Loged"])) {
-                $status = explode("=", $_COOKIE["Loged"]);
-                if ($status[3] == "Admin") { ?>
-                    <li>
-                        <a href="usersAdmin.php"><i class="fa fa-user-circle"></i> <span class="nav-label">Users</span>
-                        </a>
-                    </li><?php }} ?>
+                    $status = explode("=", $_COOKIE["Loged"]);
+                    if ($status[3] == "Admin") { ?>
+                        <li>
+                            <a href="usersAdmin.php"><i class="fa fa-user-circle"></i> <span
+                                        class="nav-label">Users</span>
+                            </a>
+                        </li><?php }
+                } ?>
                 <li>
                     <a href="pdfsAdmin.php"><i class="fa fa-file-pdf-o"></i> <span class="nav-label">PDFs</span></a>
                 </li>
@@ -82,7 +85,7 @@
                                             <div class="ibox">
                                                 <form action="#" class="dropzone" id="dropzoneForm">
                                                     <div class="fallback">
-                                                        <input name="file" type="file" multiple/>
+                                                        <input name="file" type="file"/>
                                                     </div>
 
                                                     <button class="btn btn-primary m-t-n-xs btn-block"
@@ -169,6 +172,102 @@
         return formData;
     }
 
+    function parsePDF(text) {
+        text = text.split(' ')
+        countJuryMember = 0
+        cleanArray = text.filter((value) => value);
+        for (var i = 0; i < cleanArray.length; i++) {
+            if (cleanArray[i] == "................................................") {
+                countJuryMember++;
+            }
+        }
+        let index = cleanArray.indexOf("Soyadı:")
+        let name = cleanArray[index + 1];
+        let surname = cleanArray[index + 2];
+        let secondIndex = cleanArray.indexOf("Danışman,")
+        let supervisor = ""
+        for (var i = secondIndex - 3; i < secondIndex; i++) {
+            supervisor = supervisor + " " + cleanArray[i]
+        }
+        index = cleanArray.indexOf("................................................")
+        secondIndex = cleanArray.indexOf("Jüri", index + 1)
+        let juryMember = ""
+        for (var i = index + 1; i < secondIndex; i++) {
+            juryMember = juryMember + " " + cleanArray[i]
+        }
+        let juryMember2 = ""
+        if (countJuryMember == 3) {
+            index = cleanArray.indexOf("................................................", secondIndex + 1)
+            secondIndex = cleanArray.indexOf("Jüri", index + 1)
+            for (var i = index + 1; i < secondIndex; i++) {
+                juryMember2 = juryMember2 + " " + cleanArray[i]
+            }
+        }
+        index = cleanArray.indexOf("No:")
+        let studentNo = cleanArray[index + 1]
+        index = cleanArray.indexOf("BÖLÜMÜ")
+        let lessonName = cleanArray[index + 1] + ' ' + cleanArray[index + 2]
+        index = cleanArray.lastIndexOf("ÖZET")
+        secondIndex = cleanArray.indexOf("Anahtar")
+        let summary = ""
+        for (var i = index; i < secondIndex; i++) {
+            summary = summary + " " + cleanArray[i]
+        }
+        let thirdIndex = cleanArray.lastIndexOf("GİRİŞ")
+        let keywords = ""
+        for (var i = secondIndex; i < thirdIndex; i++) {
+            keywords = keywords + " " + cleanArray[i]
+        }
+        index = cleanArray.indexOf("Tarih:")
+        let date = cleanArray[index + 1]
+        index = cleanArray.indexOf("PROJESİ")
+        secondIndex = cleanArray.indexOf("PROJESİ", 9)
+        let title = ""
+        for (var i = index + 1; i < secondIndex + 1; i++) {
+            title = title + " " + cleanArray[i]
+        }
+        let values = {};
+        values['name'] = name;
+        values['surname'] = surname;
+        values['studentNo'] = studentNo;
+        values['lessonName'] = lessonName;
+        values['summary'] = summary;
+        values['keywords'] = keywords;
+        values['date'] = date;
+        values['title'] = title;
+        values['supervisor'] = supervisor;
+        values['juryMember'] = juryMember;
+        values['juryMember2'] = juryMember2;
+        addPDFtoDatabase(values)
+    }
+
+    function addPDFtoDatabase(values) {
+        $.ajax({
+            type: "POST",
+            url: "api/uploadPDFValues.php",
+            data: {
+                name: values['name'],
+                surname: values['surname'],
+                studentNo: values['studentNo'],
+                lessonName: values['lessonName'],
+                summary: values['summary'],
+                keywords: values['keywords'],
+                date: values['date'],
+                title: values['title'],
+                supervisor: values['supervisor'],
+                juryMember: values['juryMember'],
+                juryMember2: values['juryMember2'],
+            },
+            success: function (response) {
+                swal({
+                    title: "Operation Successful!",
+                    text: "You added PDF values to the database successfully!",
+                    type: "success"
+                });
+            }
+        });
+    }
+
     $(document).on('submit', '#dropzoneForm', function (e) {
         e.preventDefault();
         e.stopPropagation();
@@ -196,7 +295,7 @@
                     });
                     renderPage(pageNum, scale);
                     gettext(`./pdf/${response}`).then(function (text) {
-                            console.log(text);
+                            parsePDF(text)
                         },
                         function (reason) {
                             console.error(reason);
@@ -217,19 +316,21 @@
         ctx = canvas.getContext('2d');
 
 
-    function gettext(pdfUrl){
+    function gettext(pdfUrl) {
         var pdf = pdfjsDistBuildPdf.getDocument(pdfUrl);
-        return pdf.then(function(pdf) {
+        return pdf.then(function (pdf) {
             var maxPages = pdf.pdfInfo.numPages;
             var countPromises = [];
             for (var j = 1; j <= maxPages; j++) {
                 var page = pdf.getPage(j);
 
                 var txt = "";
-                countPromises.push(page.then(function(page) {
+                countPromises.push(page.then(function (page) {
                     var textContent = page.getTextContent();
-                    return textContent.then(function(text){
-                        return text.items.map(function (s) { return s.str; }).join('');
+                    return textContent.then(function (text) {
+                        return text.items.map(function (s) {
+                            return s.str;
+                        }).join('');
                     });
                 }));
             }
