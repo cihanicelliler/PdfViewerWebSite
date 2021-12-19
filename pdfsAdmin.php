@@ -18,7 +18,6 @@
     <link href="assets/css/plugins/dropzone/dropzone.css" rel="stylesheet">
 
     <link href="assets/css/plugins/sweetalert/sweetalert.css" rel="stylesheet">
-
 </head>
 
 <body>
@@ -182,8 +181,15 @@
             }
         }
         let index = cleanArray.indexOf("Soyadı:")
-        let name = cleanArray[index + 1];
-        let surname = cleanArray[index + 2];
+        let name = "";
+        let surname = "";
+        while (cleanArray.indexOf("Soyadı:",index)>0){
+            name = name+cleanArray[index + 1]+',';
+            surname = surname+cleanArray[index + 2]+',';
+            index++;
+            index=cleanArray.indexOf("Soyadı:",index)
+        }
+
         let secondIndex = cleanArray.indexOf("Danışman,")
         let supervisor = ""
         for (var i = secondIndex - 3; i < secondIndex; i++) {
@@ -204,7 +210,12 @@
             }
         }
         index = cleanArray.indexOf("No:")
-        let studentNo = cleanArray[index + 1]
+        let studentNo = ""
+        while (cleanArray.indexOf("No:",index)>0){
+            studentNo = studentNo+cleanArray[index + 1]+','
+            index++;
+            index=cleanArray.indexOf("No:",index)
+        }
         index = cleanArray.indexOf("BÖLÜMÜ")
         let lessonName = cleanArray[index + 1] + ' ' + cleanArray[index + 2]
         index = cleanArray.lastIndexOf("ÖZET")

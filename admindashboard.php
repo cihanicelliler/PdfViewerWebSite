@@ -15,7 +15,13 @@
     <link href="assets/css/style.css" rel="stylesheet">
 
     <link href="assets/css/plugins/dataTables/datatables.min.css" rel="stylesheet">
-
+    <style>
+        .overflowTd{
+            overflow: auto;
+            max-height: 100px !important;
+            display: block;
+        }
+    </style>
 </head>
 
 <body>
@@ -124,6 +130,9 @@
         pdfsTable = $('#pdfsTable').DataTable({
             pageLength: 10,
             responsive: true,
+            columnDefs: [
+                { className: "overflowTd", "targets": [ 10 ] }
+            ],
             dom: '<"html5buttons"B>lTfgitp',
             buttons: [
                 {extend: 'copy'},
