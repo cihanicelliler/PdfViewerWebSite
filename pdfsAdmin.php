@@ -257,6 +257,18 @@
         }
         index = cleanArray.indexOf("Tarih:")
         let date = cleanArray[index + 1]
+        date = date.split('.')
+        if (date[1] >08 && date[1] <= 12 ) {
+
+            date = date[2] + "/" + ++date[2] + " Güz"
+
+        } else {
+
+            let yearPrev = date[2] - 1;
+
+            date = yearPrev + "/" + date[2] + " Bahar"
+
+        }
         index = cleanArray.indexOf("PROJESİ")
         secondIndex = cleanArray.indexOf("PROJESİ", 9)
         let title = ""

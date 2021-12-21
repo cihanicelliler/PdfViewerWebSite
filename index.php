@@ -63,9 +63,11 @@
                         to read and analyze <br/>
                         your PDF files.</h1>
                     <p>Let's start analysis now!</p>
+                    <?php if(isset($_COOKIE["Loged"])) { ?>
                     <p>
                         <a class="btn btn-lg btn-primary" href="pdfsAdmin.php" role="button">PDF Uploader</a>
                     </p>
+                    <?php } ?>
                 </div>
                 <div class="carousel-image wow zoomIn">
                     <img src="assets/img/landing/laptop.png" alt="laptop"/>
@@ -80,7 +82,9 @@
                 <div class="carousel-caption blank">
                     <h1>We offer you  <br/> meaningful analysis.</h1>
                     <p>Let's start analysis now!</p>
+                    <?php if(isset($_COOKIE["Loged"])) { ?>
                     <a class="btn btn-lg btn-primary" href="pdfsAdmin.php" role="button">PDF Uploader</a>
+                    <?php } ?>
                 </div>
             </div>
             <!-- Set background for slide in css -->
