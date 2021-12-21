@@ -181,16 +181,36 @@
             }
         }
         let index = cleanArray.indexOf("Soyadı:")
+        let secondIndex = cleanArray.indexOf("Öğrenci", index)
         let name = "";
         let surname = "";
-        while (cleanArray.indexOf("Soyadı:",index)>0){
-            name = name+cleanArray[index + 1]+',';
-            surname = surname+cleanArray[index + 2]+',';
+        while (cleanArray.indexOf("Soyadı:", index) > 0) {
+            if (secondIndex>0){
+                for (var i = index + 1; i < secondIndex; i++) {
+                    if (i == secondIndex - 1) {
+                        surname = surname + cleanArray[i];
+                    }else{
+                        name = name + cleanArray[i] + ' ';
+                    }
+                }
+            }else{
+                secondIndex = cleanArray.indexOf("İÇİNDEKİLER", index)
+                for (var i = index + 1; i < secondIndex; i++) {
+                    if (i == secondIndex - 1) {
+                        surname = surname + cleanArray[i];
+                    }else{
+                        name = name + cleanArray[i] + ' ';
+                    }
+                }
+            }
+            name = name + ',';
+            surname = surname + ',';
             index++;
-            index=cleanArray.indexOf("Soyadı:",index)
+            index = cleanArray.indexOf("Soyadı:", index)
+            secondIndex = cleanArray.indexOf("Öğrenci", index)
         }
 
-        let secondIndex = cleanArray.indexOf("Danışman,")
+        secondIndex = cleanArray.indexOf("Danışman,")
         let supervisor = ""
         for (var i = secondIndex - 3; i < secondIndex; i++) {
             supervisor = supervisor + " " + cleanArray[i]
@@ -211,10 +231,16 @@
         }
         index = cleanArray.indexOf("No:")
         let studentNo = ""
-        while (cleanArray.indexOf("No:",index)>0){
-            studentNo = studentNo+cleanArray[index + 1]+','
+        while (cleanArray.indexOf("No:", index) > 0) {
+            studentNo = studentNo + cleanArray[index + 1] + ','
             index++;
-            index=cleanArray.indexOf("No:",index)
+            index = cleanArray.indexOf("No:", index)
+        }
+        let teaching = ""
+        if (studentNo[5] == 1) {
+            teaching = "1.Öğretim";
+        } else {
+            teaching = "2.Öğretim";
         }
         index = cleanArray.indexOf("BÖLÜMÜ")
         let lessonName = cleanArray[index + 1] + ' ' + cleanArray[index + 2]
@@ -249,6 +275,7 @@
         values['supervisor'] = supervisor;
         values['juryMember'] = juryMember;
         values['juryMember2'] = juryMember2;
+        values['teaching'] = teaching;
         addPDFtoDatabase(values)
     }
 
@@ -268,6 +295,7 @@
                 supervisor: values['supervisor'],
                 juryMember: values['juryMember'],
                 juryMember2: values['juryMember2'],
+                teaching: values['teaching']
             },
             success: function (response) {
                 swal({

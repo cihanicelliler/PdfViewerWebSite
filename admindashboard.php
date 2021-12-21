@@ -85,6 +85,7 @@
                                             <th>Name</th>
                                             <th>Surname</th>
                                             <th>Student No</th>
+                                            <th>Teaching</th>
                                             <th>Lesson Name</th>
                                             <th>Keywords</th>
                                             <th>Date</th>
@@ -131,7 +132,7 @@
             pageLength: 10,
             responsive: true,
             columnDefs: [
-                { className: "overflowTd", "targets": [ 10 ] }
+                { className: "overflowTd", "targets": [ 11 ] }
             ],
             dom: '<"html5buttons"B>lTfgitp',
             buttons: [
@@ -150,6 +151,9 @@
                 },
                 {
                     data: "student_no"
+                },
+                {
+                    data: "teaching"
                 },
                 {
                     data: "lesson_name"

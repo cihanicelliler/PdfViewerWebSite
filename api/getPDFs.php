@@ -21,7 +21,7 @@ if ($status[3] == "Admin") {
 $result_query = mysqli_query($conn362, $query);
 $rowcount = mysqli_num_rows($result_query);
 while ($row = $result_query->fetch_array()) {
-    $data['data'][] = array("name" => $row['Name'], "surname" => $row['Surname'], "student_no" => $row['Student_No'], "lesson_name" => $row['Lesson_Name'], 'keywords' => $row['Keywords'], "date" => $row['Date'], "title" => $row['Title'], "supervisor" => $row['Supervisor'], "jury_member" => $row['Jury_Member'], "jury_member2" => $row['Jury_Member2'], "summary" => $row['Summary']);
+    $data['data'][] = array("name" => $row['Name'], "surname" => $row['Surname'], "teaching" => $row['Teaching'], "student_no" => $row['Student_No'], "lesson_name" => $row['Lesson_Name'], 'keywords' => $row['Keywords'], "date" => $row['Date'], "title" => $row['Title'], "supervisor" => $row['Supervisor'], "jury_member" => $row['Jury_Member'], "jury_member2" => $row['Jury_Member2'], "summary" => $row['Summary']);
 }
 $object = (object)$data;
 echo json_encode($object);
